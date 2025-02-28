@@ -64,6 +64,7 @@ TEMPLATES = [
         'DIRS': [
             os.path.join(BASE_DIR, 'frontend/static')
         ],
+        'APP_DIRS': True,
         'OPTIONS': {  # Add this line
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -77,6 +78,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'djangoproj.wsgi.application'
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Default authentication backend
+]
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
