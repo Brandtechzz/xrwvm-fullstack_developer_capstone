@@ -58,17 +58,52 @@ app.get('/fetchReviews/dealer/:id', async (req, res) => {
 
 // Express route to fetch all dealerships
 app.get('/fetchDealers', async (req, res) => {
-//Write your code here
+  try {
+    const documents = await Dealerships.find();
+    res.json(documents);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching dealerships' });
+  }
 });
 
 // Express route to fetch Dealers by a particular state
 app.get('/fetchDealers/:state', async (req, res) => {
-//Write your code here
+    const state = req.params.state;
+    console.log(`Fetching dealers in state: ${state}`);
+
+    try {
+        const documents = await Dealerships.find({ state });
+        if (!documents.length) {
+            return res.status(404).json({ error: 'No dealers found in this state' });
+        }
+        res.json(documents);
+    } catch (error) {
+        console.error('Error fetching dealerships by state:', error);
+        res.status(500).json({ error: 'Error fetching dealerships by state' });
+    }
 });
 
 // Express route to fetch dealer by a particular id
 app.get('/fetchDealer/:id', async (req, res) => {
-//Write your code here
+    const dealerId = req.params.id;
+    console.log(`Received request for dealer ID: ${dealerId}`);
+
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(dealerId)) {
+        return res.status(400).json({ error: 'Invalid dealer ID format' });
+    }
+
+    try {
+        const document = await Dealerships.findById(dealerId);
+        if (!document) {
+            console.warn('Dealer not found for ID:', dealerId);
+            return res.status(404).json({ error: 'Dealer not found' });
+        }
+        res.json(document);
+    } catch (error) {
+        console.error('Error fetching dealer by ID:', error);
+        res.status(500).json({ error: 'Error fetching dealer' });
+    }
 });
 
 //Express route to insert review
