@@ -51,14 +51,49 @@ def login_user(request):
 
     return JsonResponse({"error": "Method Not Allowed"}, status=405)
 
-# Create a `logout_request` view to handle sign out request
-# def logout_request(request):
-# ...
+@csrf_exempt  # This decorator allows the view to be accessed without CSRF validation
+def logout_request(request):
+    if request.method == 'POST':  # Ensure this view only handles POST requests
+        logout(request)  # Logs out the user from the session
+        data = {"userName": ""}  # Return an empty username in the response
+        return JsonResponse(data)  # Return JSON response confirming logout
+    return JsonResponse({"error": "Method Not Allowed"}, status=405)
 
-# Create a `registration` view to handle sign up request
-# @csrf_exempt
-# def registration(request):
-# ...
+# Registration view to handle sign-up requests
+@csrf_exempt
+def registration(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            username = data.get('userName')
+            password = data.get('password')
+            first_name = data.get('firstName')
+            last_name = data.get('lastName')
+            email = data.get('email')
+
+            if User.objects.filter(username=username).exists():
+                return JsonResponse({"error": "Username already exists"}, status=400)
+
+            if User.objects.filter(email=email).exists():
+                return JsonResponse({"error": "Email already registered"}, status=400)
+
+            user = User.objects.create_user(
+                username=username,
+                first_name=first_name,
+                last_name=last_name,
+                password=password,
+                email=email
+            )
+            login(request, user)  # Automatically log in the new user
+            return JsonResponse({"userName": username, "status": "Authenticated"}, status=201)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON."}, status=400)
+        except Exception as e:
+            logger.error("Error during registration: %s", str(e))
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Method not allowed. Please use a POST request for registration."}, status=405)
 
 # # Update the `get_dealerships` view to render the index page with
 # a list of dealerships
