@@ -7,13 +7,17 @@ from django.views.generic import TemplateView
 
 app_name = 'djangoapp'
 urlpatterns = [
-    # path for registration (if needed)
-
     # API endpoint for login
     path('login-api/', views.login_user, name='login_api'),
     
     # Route to render the React app for login
     path('login/', TemplateView.as_view(template_name="index.html"), name='login_page'),
+
+    # API endpoint for logout
+    path('logout/', views.logout_request, name='logout_api'),
+
+    # API endpoint for registration
+    path('register/', views.registration, name='registration_api'),
 
     # path for dealer reviews view
 
