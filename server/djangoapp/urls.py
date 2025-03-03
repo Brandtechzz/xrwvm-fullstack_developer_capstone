@@ -22,6 +22,9 @@ urlpatterns = [
     # Path for login user API
     path('api/login/', views.login_user, name='login_user'),  # API endpoint for login
 
+    # path for get_cars
+    path(route='get_cars', view=views.get_cars, name ='getcars'),
+
     # path for dealer reviews view
 
     # path for add a review view
